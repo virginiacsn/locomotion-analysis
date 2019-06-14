@@ -1,0 +1,34 @@
+function[group_speed] = group_by_speed(trial_data,unique_spd,trial_spd,params)
+
+
+for iparam = 1:length(params)
+    for ispd = 1:size(trial_spd,1)
+        group_speed(ispd,:) = unique_spd(ispd,:);
+        
+        if iscell(trial_data(1).(params{iparam}))
+            for ipaw = 1:4
+                if iscell(trial_data(1).trial_num)
+                    trial_num = [trial_data.trial_num{ipaw}];
+                else
+                    trial_num = [trial_data.trial_num];
+                end
+                trials = find(ismember(trial_num,trial_spd{ispd}));
+                
+                var = [];
+                for ivar = 1:size(trial_data(itrial).(params{iparam}){ipaw},2)
+                    for itrial = trials
+                        var = [var, trial_data(itrial).(params{iparam}){ipaw}(:,ivar)];
+                    end
+                    group_speed(ispd).(params{iparam}){ipaw}{ivar} = var;
+                    
+                end       
+                
+                group_speed(ispd).([params{iparam},'_spd_mean']){ipaw} = mean([trial_data(trials).(params{iparam}){ipaw}],2);
+                group_speed(ispd).([params{iparam},'_spd_sem']){ipaw} = std([trial_data(trials).(params{iparam}){ipaw}],[],2)/sqrt(size([trial_data(trials).(params{iparam}){ipaw}],2));
+                
+            end
+        else
+            
+        end
+    end
+end
