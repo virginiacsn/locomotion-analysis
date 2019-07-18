@@ -1,4 +1,4 @@
-function[trial_data] = stride_modulation(trial_data,nbins)
+function[trial_data] = stride_modulation(trial_data,nbins,signal)
 % Function for stride modulation analysis.
 %
 % Inputs:
@@ -39,6 +39,7 @@ for itrial_img =  1:length(imaging_data)
     for ipaw = 1:4
         k = 0;
         
+        stride_idx = [];
         stride_vals = {};
         stride_frames = {};
         
@@ -64,11 +65,13 @@ for itrial_img =  1:length(imaging_data)
                 
                 k = k+1;
                 
+                stride_idx(k) = istance;
+                
                 stride_vals{k} = squeeze(tracking_data(itrial_trk).final_tracks(:,ipaw,stride_ini:stride_end));
                 stride_frames{k} = stride_ini:stride_end;
                 
                 img_frames{k} = imaging_data(itrial_img).stance_frame{ipaw}(istance):imaging_data(itrial_img).stance_frame{ipaw}(istance+1);
-                img_vals{k} = imaging_data(itrial_img).intensity(img_frames{k},:);
+                img_vals{k} = imaging_data(itrial_img).(signal)(img_frames{k},:);
                 
 %                 fprintf('\n trial: %d, paw: %d, stance: %d',itrial,ipaw,istance);
             
@@ -82,7 +85,7 @@ for itrial_img =  1:length(imaging_data)
                     end
                 else
                     img_frames_interp{k} = zeros(1,20);
-                    img_vals_interp{k} = zeros(20,size(imaging_data(itrial_img).intensity,2));
+                    img_vals_interp{k} = zeros(20,size(imaging_data(itrial_img).(signal),2));
                 end
                 
                 % Find corresponding swing onset frame
@@ -92,6 +95,7 @@ for itrial_img =  1:length(imaging_data)
             end
         end
         
+        trial_data.tracking(itrial_trk).stride_idx{ipaw} = stride_idx;
         trial_data.tracking(itrial_trk).stride_vals{ipaw} = stride_vals;
         trial_data.tracking(itrial_trk).stride_frames{ipaw} = stride_frames;
         
@@ -119,7 +123,7 @@ for itrial_img =  1:length(imaging_data)
                 for ibin = 0:nbins-2
                     trial_data.tracking(itrial_trk).stride_pts_bins{ipaw}(ibin+1,:,istride) = mean(stride_vals{istride}(:,1+ibin*pts_bin:(ibin+1)*pts_bin),2)';
                 end
-                trial_data.tracking(itrial_trk).stride_pts_bins{ipaw}(ibin+2,:,istride) = mean(stride_vals{istride}(:,(ibin+1)*pts_bin:end),2)';
+                trial_data.tracking(itrial_trk).stride_pts_bins{ipaw}(ibin+2,:,istride) = mean(stride_vals{istride}(:,1+(ibin+1)*pts_bin:end),2)';
             else
                 trial_data.tracking(itrial_trk).stride_pts_bins{ipaw}(:,:,istride) = zeros(nbins,4);
             end
@@ -151,8 +155,8 @@ for itrial_img =  1:length(imaging_data)
                 trial_data.imaging(itrial_img).img_pts_bins{ipaw}(ibin+1,:,istride) = trapz(stride_time,stride_bin_vals,1);
                 % trial_data(itrial).img_pts_bins{ipaw}(ibin+1,:,istride) = mean(stride_bin_vals);
             end
-            stride_time = (0:stride_length-(ibin+1)*pts_bin)';
-            stride_bin_vals = trial_data.imaging(itrial_img).img_vals_interp{ipaw}{istride}((ibin+1)*pts_bin:end,:);
+            stride_time = (1:stride_length-(ibin+1)*pts_bin)';
+            stride_bin_vals = trial_data.imaging(itrial_img).img_vals_interp{ipaw}{istride}(1+(ibin+1)*pts_bin:end,:);
             trial_data.imaging(itrial_img).img_pts_bins{ipaw}(ibin+2,:,istride) = trapz(stride_time,stride_bin_vals,1);
             % trial_data(itrial).img_pts_bins{ipaw}(ibin+2,:,istride) = mean(stride_bin_vals);
         end

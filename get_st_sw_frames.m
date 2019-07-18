@@ -9,8 +9,8 @@ for ipaw = 1:4
             npts = size(tracking_data.ptsraw.stance{ipaw},1);
         end
         st_sw_frames{ipaw} = [tracking_data.ptsraw.stance{ipaw}(1:npts,5), tracking_data.ptsraw.swing{ipaw}(1:npts,5)];
-    elseif isfield(tracking_data,'stride_frames')
-        st_sw_frames{ipaw} = tracking_data.stride_frames{ipaw}(:,1:2);
+    elseif isfield(tracking_data,'stride_fr')
+        st_sw_frames{ipaw} = tracking_data.stride_fr{ipaw}(:,1:2);
     elseif isfield(tracking_data,'strides')
         st_sw_frames{ipaw} = tracking_data.strides{ipaw}(:,1:2);
     end

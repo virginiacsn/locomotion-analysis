@@ -6,23 +6,39 @@ for iparam = 1:length(params)
         group_speed(ispd,:).spd = unique_spd(ispd,:);
         group_speed(ispd).trial_num = trial_spd{ispd};
         
-        if iscell(trial_data(1).(params{iparam}))
+        if iscell(trial_data(1).trial_num)
+            trial_num = [trial_data.trial_num{1}];
+        else
+            trial_num = [trial_data.trial_num];
+        end
+        trials = find(ismember(trial_num,trial_spd{ispd}));
+        
+        for itrial = trials
+            if ~isempty(trial_data(itrial).(params{iparam}))
+                itrial_field = itrial;
+            end
+        end
+        
+        if iscell(trial_data(itrial_field).(params{iparam}))
             for ipaw = 1:4
                 if iscell(trial_data(1).trial_num)
                     trial_num = [trial_data.trial_num{ipaw}];
                 else
                     trial_num = [trial_data.trial_num];
                 end
+                
                 trials = find(ismember(trial_num,trial_spd{ispd}));
                 
-                for ivar = 1:size(trial_data(1).(params{iparam}){ipaw},2)
-                    var = [];
+                for ivar = 1:size(trial_data(itrial_field).(params{iparam}){ipaw},2)
+                    varb = [];
                     for itrial = trials
-                        var = [var, trial_data(itrial).(params{iparam}){ipaw}(:,ivar)];
+                        if ~isempty(trial_data(itrial).(params{iparam}))
+                            varb = [varb, trial_data(itrial).(params{iparam}){ipaw}(:,ivar)];
+                        end
                     end
-                    group_speed(ispd).(params{iparam}){ipaw}{ivar} = var;
-                    group_speed(ispd).([params{iparam},'_spd_mean']){ipaw}(:,ivar) = mean(var,2);
-                    group_speed(ispd).([params{iparam},'_spd_sem']){ipaw}(:,ivar) = std(var,[],2)/sqrt(size(var,2));
+                    group_speed(ispd).(params{iparam}){ipaw}{ivar} = varb;
+                    group_speed(ispd).([params{iparam},'_spd_mean']){ipaw}(:,ivar) = mean(varb,2);
+                    group_speed(ispd).([params{iparam},'_spd_sem']){ipaw}(:,ivar) = std(varb,[],2)/sqrt(size(varb,2));
                 end
             end
         else
@@ -30,14 +46,16 @@ for iparam = 1:length(params)
             trial_num = [trial_data.trial_num];
             trials = find(ismember(trial_num,trial_spd{ispd}));
             
-            for ivar = 1:size(trial_data(1).(params{iparam}),2)
-                var = [];
+            for ivar = 1:size(trial_data(itrial_field).(params{iparam}),2)
+                varb = [];
                 for itrial = trials
-                    var = [var, trial_data(itrial).(params{iparam})(:,ivar)];
+                    if ~isempty(trial_data(itrial).(params{iparam}))
+                        varb = [varb, trial_data(itrial).(params{iparam})(:,ivar)];
+                    end
                 end
-                group_speed(ispd).(params{iparam}){ivar} = var;
-                group_speed(ispd).([params{iparam},'_spd_mean'])(:,ivar) = mean(var,2);
-                group_speed(ispd).([params{iparam},'_spd_sem'])(:,ivar) = std(var,[],2)/sqrt(size(var,2));
+                group_speed(ispd).(params{iparam}){ivar} = varb;
+                group_speed(ispd).([params{iparam},'_spd_mean'])(:,ivar) = mean(varb,2);
+                group_speed(ispd).([params{iparam},'_spd_sem'])(:,ivar) = std(varb,[],2)/sqrt(size(varb,2));
             end
         end
     end

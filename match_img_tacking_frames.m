@@ -44,8 +44,8 @@ for ipaw = 1:4
             end
         end
         
-        trial_data.imaging(itrial_img).stance_frame{ipaw} = stance_frame_aux;
-        trial_data.imaging(itrial_img).stance_time{ipaw} = stance_time_aux;
+        trial_data.imaging(itrial_img).stance_frame{ipaw} = stance_frame_aux';
+        trial_data.imaging(itrial_img).stance_time{ipaw} = stance_time_aux';
         
         
         swing_frame_aux = [];
@@ -62,8 +62,8 @@ for ipaw = 1:4
             end
         end
         
-        trial_data.imaging(itrial_img).swing_frame{ipaw} = swing_frame_aux;
-        trial_data.imaging(itrial_img).swing_time{ipaw} = swing_time_aux;       
+        trial_data.imaging(itrial_img).swing_frame{ipaw} = swing_frame_aux';
+        trial_data.imaging(itrial_img).swing_time{ipaw} = swing_time_aux';       
     end
 end
 end

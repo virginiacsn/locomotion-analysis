@@ -42,7 +42,7 @@ k = 0;
 neurons_final_tmp = [];
 for i = 1:length(neurons_final)
     area_mask = sum(cn.mask{neurons_final(i)}(:));
-    if area_mask > size(image_stack,1)*size(image_stack,2)*0.01
+    if area_mask > size(image_stack,1)*size(image_stack,2)*0.005
         k = k+1;
         neurons_final_tmp(k) = neurons_final(i);
     end
@@ -60,7 +60,7 @@ for i = 1:size(neurons_final,1)
     end
 end
 
-[idx,idy] = find(dist_mat<mean(dist_mat(:))*0.2 & dist_mat>0);
+[idx,idy] = find(dist_mat<mean(dist_mat(:))*0.3 & dist_mat>0);
 
 if ~isempty(idx)
     figure;
